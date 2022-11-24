@@ -10,7 +10,7 @@ g = 9.8
 # get environment
 env = gym.make('CartPole-v1', render_mode="human")
 #env.env.seed(1)     # seed for reproducibility
-obs, info = env.reset(seed=42)
+obs, info = env.reset(seed=1)
 reward_total = 0
 
 # ADD SOMETHING HERE
