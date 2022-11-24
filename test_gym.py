@@ -14,7 +14,7 @@ obs, info = env.reset(seed=42)
 reward_total = 0
 
 # ADD SOMETHING HERE
-K = np.array([20,34,23,44])
+K = np.array([[1,1,1,333]])
 
 def apply_state_controller(K, x):
     # feedback controller
