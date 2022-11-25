@@ -42,10 +42,7 @@ def apply_state_controller(K, x):
     # feedback controller
     # MODIFY THIS PARTS
     u = -np.dot(K, x)   # u = -Kx
-    if u > 0:
-        return 1, u     # if force_dem > 0 -> move cart right
-    else:
-        return 0, u     # if force_dem <= 0 -> move cart left
+    return u
 
 for i in range(1000):
     env.render()
@@ -53,7 +50,11 @@ for i in range(1000):
     # get force direction (action) and force value (force)
 
     # MODIFY THIS PART
-    action, force = apply_state_controller(K, obs)
+    force = apply_state_controller(K, obs)
+    if force > 0:
+        action = 1
+    else:
+        action = 0
     
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     abs_force = abs(float(np.clip(force, -10, 10)))
