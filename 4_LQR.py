@@ -65,9 +65,10 @@ for i in range(1000):
     obs, reward, done, truncated, info = env.step(action)
 
     reward_total = reward_total+reward
-    if done:
+    if done or truncated:
         print(f'Terminated after {i+1} iterations.')
         print(reward_total)
+        obs, info = env.reset()
         break
 
 env.close()
