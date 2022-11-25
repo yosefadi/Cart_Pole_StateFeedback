@@ -10,11 +10,24 @@ g = 9.8
 # get environment
 env = gym.make('CartPole-v1', render_mode="human")
 #env.env.seed(1)     # seed for reproducibility
-obs, info = env.reset(seed=42)
+obs, info = env.reset(seed=1)
 reward_total = 0
 
 # ADD SOMETHING HERE
-K = 10**12 * np.array([[-1.0041,-0.024,-0.5781,-0.0014]])
+K = np.array([[-9,-10,-50,-190]])
+
+A = np.array([[0, 1, 0, 0],
+              [0, 0, -0.72, 0],
+              [0, 0, 0, 1],
+              [0, 0, 15.77, 0]])
+B = np.array([[0],
+              [0.98],
+              [0],
+              [-1.46]])
+
+C = np.array([[1, 0, 0, 0],
+              [0, 0, 1, 0]])
+              
 #K = np.array([[ 1,1,1,1]])
 def apply_state_controller(K, x):
     # feedback controller
@@ -44,10 +57,10 @@ for i in range(1000):
     obs, reward, done, truncated, info = env.step(action)
 
     reward_total = reward_total+reward
-    #if done:
-    #    print(f'Terminated after {i+1} iterations.')
-    #    print(reward_total)
-    #    obs, info = env.reset()
-    #    break
+    if done or truncated:
+        print(f'Terminated after {i+1} iterations.')
+        print(reward_total)
+        obs, info = env.reset()
+        break
 
 env.close()
