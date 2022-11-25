@@ -19,6 +19,7 @@ A = np.array([[0, 1, 0, 0],
               [0, 0, -0.72, 0],
               [0, 0, 0, 1],
               [0, 0, 15.77, 0]])
+
 B = np.array([[0],
               [0.98],
               [0],
@@ -27,8 +28,17 @@ B = np.array([[0],
 C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
+L = np.transpose(np.array([[1, 20, 30, 7],
+                          [9, 3, 1, 4]]))
+
 # place the regulator pole to -10, -10+j5, -10-j5, -20
 K = 10**3 * np.array([[-1.7357,-0.5381,-1.8094,-0.3954]])
+
+dt = 0.02 # from gymnasium docs
+
+def compute_state_estimator(A, B, C, L, x_hat, y, u):
+    x_hat_dot = A@x_hat + B@u + L@(y-C@x_hat)
+    return x_hat_dot
 
 def apply_state_controller(K, x):
     # feedback controller
@@ -37,19 +47,21 @@ def apply_state_controller(K, x):
     print(u)
     return u
 
+obs_hat = obs
 for i in range(1000):
     env.render()
-    
+
     # get force direction (action) and force value (force)
 
     # MODIFY THIS PART
     force = apply_state_controller(K, obs)
-    
-    force = apply_state_controller(K, obs)
     if force > 0:
         action = 1
     else:
-        action = 0
+        action = 0 
+
+    y = C@obs
+    obs_hat = compute_state_estimator(A, B, C, L, obs_hat, y, force)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     abs_force = abs(float(np.clip(force, -10, 10)))
