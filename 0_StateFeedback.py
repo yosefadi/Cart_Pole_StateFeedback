@@ -1,4 +1,4 @@
-import gymnasium as gym
+import gym
 import numpy as np
 
 lp = 0.5
