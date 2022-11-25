@@ -45,7 +45,6 @@ for i in range(1000):
     # get force direction (action) and force value (force)
 
     # MODIFY THIS PART
-    y = C@obs
     
     action, force = apply_state_controller(K, obs)
     
