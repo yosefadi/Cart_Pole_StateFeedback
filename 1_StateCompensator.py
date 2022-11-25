@@ -54,7 +54,7 @@ for i in range(1000):
     # get force direction (action) and force value (force)
 
     # MODIFY THIS PART
-    force = apply_state_controller(K, obs)
+    force = apply_state_controller(K, obs_hat)
     if force > 0:
         action = 1
     else:
