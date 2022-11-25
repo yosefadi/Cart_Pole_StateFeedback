@@ -1,5 +1,6 @@
 import gymnasium as gym
 import numpy as np
+import math
 
 lp = 0.5
 mp = 0.1
@@ -13,9 +14,7 @@ env = gym.make('CartPole-v1', render_mode="human")
 obs, info = env.reset(seed=1)
 reward_total = 0
 
-# place the pole to -10, -10+j5, -10-j5, -20
-K = 10**3 * np.array([[-1.7357,-0.5381,-1.8094,-0.3954]])
-
+# System State Equation
 A = np.array([[0, 1, 0, 0],
               [0, 0, -0.72, 0],
               [0, 0, 0, 1],
@@ -28,7 +27,9 @@ B = np.array([[0],
 C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
-#K = np.array([[ 1,1,1,1]])
+# place the regulator pole to -10, -10+j5, -10-j5, -20
+K = 10**3 * np.array([[-1.7357,-0.5381,-1.8094,-0.3954]])
+
 def apply_state_controller(K, x):
     # feedback controller
     # MODIFY THIS PARTS
