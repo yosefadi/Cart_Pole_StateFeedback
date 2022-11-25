@@ -13,8 +13,8 @@ env = gym.make('CartPole-v1', render_mode="human")
 obs, info = env.reset(seed=1)
 reward_total = 0
 
-# ADD SOMETHING HERE
-K = np.array([[-9,-10,-50,-190]])
+# place the pole to -10, -10+j5, -10-j5, -20
+K = 10**3 * np.array([[-1.7357,-0.5381,-1.8094,-0.3954]])
 
 A = np.array([[0, 1, 0, 0],
               [0, 0, -0.72, 0],
@@ -27,7 +27,7 @@ B = np.array([[0],
 
 C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
-              
+
 #K = np.array([[ 1,1,1,1]])
 def apply_state_controller(K, x):
     # feedback controller
