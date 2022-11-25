@@ -42,12 +42,7 @@ for i in range(1000):
     # get force direction (action) and force value (force)
 
     # MODIFY THIS PART
-<<<<<<< HEAD
     force = apply_state_controller(K, obs)
-=======
-    
-    action, force = apply_state_controller(K, obs)
->>>>>>> 462fba6df9582c62dd8d131c967ed43b005da37e
     
     force = apply_state_controller(K, obs)
     if force > 0:
