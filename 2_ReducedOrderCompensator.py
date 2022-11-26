@@ -15,26 +15,30 @@ obs, info = env.reset(seed=1)
 reward_total = 0
 
 # System State Space Equation
-A = np.array([[0, 1, 0, 0],
-              [0, 0, -mp*(mp * (g-l) + mc*g)/((mc+mp)*((4/3) * mc + (1/3) * mp)), 0],
-              [0, 0, 0, 1],
-              [0, 0, (mp*(g-l) + mc * g)/(l*((4/3) * mc + (1/3) * mp)), 0]])
+Ar = np.array([[0, 0, 1, 0],
+               [0, 0, 0, 1],
+               [0, 0, 0, -mp*(mp * (g-l) + mc*g)/((mc+mp)*((4/3) * mc + (1/3) * mp))],
+               [0, 0, 0, (mp*(g-l) + mc * g)/(l*((4/3) * mc + (1/3) * mp))]])
 
-B = np.array([[0],
-              [(1/(mc + mp) - mp/((mc + mp) * ((4/3) * mc + (1/3) * mp)))],
+Br = np.array([[0],
               [0],
-              [(-1/(l * ((4/3) * mc + (1/3) * mp)))]])
+              [(1/(mc + mp) - mp/((mc + mp) * ((4/3) * mc + (1/3) * mp)))],
+              [(-1/(l * ((4/3) * mc + (1/3) * mp)))],])
 
-C = np.array([[1, 0, 0, 0],
-              [0, 0, 1, 0]])
+Cr = np.array([[1, 0, 0, 0],
+              [0, 1, 0, 0]])
 
-At = np.transpose(A)
-Bt = np.transpose(C)
-Ct = np.transpose(B)
+Aaa = np.array([[0, 0],
+                [0, 0]])    
 
-K = control.place(A, B, [-4, -0.5+1j, -0.5-1j, -11])
-L = control.place(At,Bt, [-24, -3+6j, -3-6j, -66])
-L = np.transpose(L)
+Aau = np.array([[1, 0],
+                [0, 1]])
+
+Aua = np.array([[0, 0],
+                [0, 0]])
+
+Auu = np.array([[0, -mp*(mp * (g-l) + mc*g)/((mc+mp)*((4/3) * mc + (1/3) * mp))],
+                [0, (mp*(g-l) + mc * g)/(l*((4/3) * mc + (1/3) * mp))]])
 
 def compute_state_estimator(A, B, C, L, x_hat, x, u, dt):
     y = C@x
