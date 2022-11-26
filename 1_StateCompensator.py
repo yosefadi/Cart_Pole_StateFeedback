@@ -32,21 +32,14 @@ At = np.transpose(A)
 Bt = np.transpose(C)
 Ct = np.transpose(B)
 
-K = control.place(A, B, [-4, -0.5+1j, -0.5-1j, -11])
-L = control.place(At,Bt, [-24, -3+6j, -3-6j, -66])
+# desired pole
+P = np.array([-10, -0.5+1j, -0.5-1j, -20])
+Pt = 4*P
+
+# compute regulator and observer gain
+K = control.place(A, B, P)
+L = control.place(At,Bt, Pt)
 L = np.transpose(L)
-
-"""
-# place the regulator pole to -2, -0.5+i, -0.5-i, -9
-K = 10**0 * np.array([[-1.8464,-2.6055,-32.4639,-9.7001]])
-
-# place estimator pole to -12,-0.5+i,-0.5-i,-54
-# 6 times faster than regulator pole
-L = 10**0 * np.array([[11.9567, -2.8508],
-                      [0.8236, -58.2869],
-                      [-1.0877, 55.0433],
-                      [13.2195, 75.0915]])
-"""
 
 def compute_state_estimator(A, B, C, L, x_hat, x, u, dt):
     y = C@x
@@ -63,13 +56,16 @@ def apply_state_controller(K, x):
 
 obs_hat = np.zeros(4)
 print(obs_hat)
-iter = 0
+u_array = []
+u_total = 0
+
 for i in range(1000):
     env.render()
 
     # MODIFY THIS PART
     action, force = apply_state_controller(K, obs_hat)
     print("u:", force)
+    u_array.append(force)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     clip_force = np.clip(force, -10, 10)
@@ -92,8 +88,14 @@ for i in range(1000):
 
     reward_total = reward_total+reward
     if done or truncated:
+        for i in range(len(u_array)):
+            u_total += np.abs(u_array[i])
+        
+        u_avg = u_total/len(u_array)
+
         print(f'Terminated after {i+1} iterations.')
-        print(reward_total)
+        print("reward: ", reward_total)
+        print("u_avg: ", u_avg)
         obs, info = env.reset()
         break
 

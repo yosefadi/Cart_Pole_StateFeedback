@@ -42,10 +42,11 @@ Auu = Ar[2:,2:]
 Ba = Br[:2]
 Bu = Br[2:]
 
-Cr = C
+#Cr = C
 
-K = control.place(A, B, [-4, -0.5+1j, -0.5-1j, -11])
-L = control.place(np.transpose(Auu), np.transpose(Aau), [-3+6j, -3-6j])
+P = np.array([-10, -0.5+1j, -0.5-1j, -20])
+K = control.place(A, B, P)
+L = control.place(np.transpose(Auu), np.transpose(Aau), [-2+4j, -2-4j])
 L = np.transpose(L)
 
 def compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Lr, x, x_hat, y, xcc, u, dt):
@@ -77,12 +78,16 @@ def apply_state_controller(K, x):
 
 obs_hat = np.zeros(4)
 xcc = np.zeros(2)
+u_array = []
+u_total = 0
+
 for i in range(1000):
     env.render()
 
     # MODIFY THIS PART
     action, force = apply_state_controller(K, obs_hat)
     print("u:", force)
+    u_array.append(force)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     clip_force = np.clip(force, -10, 10)
@@ -103,8 +108,12 @@ for i in range(1000):
     print()
     reward_total = reward_total+reward
     if done or truncated:
+        for i in range(len(u_array)):
+            u_total += np.abs(u_array[i])
+            u_avg = u_total/len(u_array)
         print(f'Terminated after {i+1} iterations.')
-        print(reward_total)
+        print("reward: ", reward_total)
+        print("u_avg: ", u_avg)
         obs, info = env.reset()
         break
 
