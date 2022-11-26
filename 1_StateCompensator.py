@@ -67,17 +67,17 @@ for i in range(1000):
     clip_force = np.clip(force, -10, 10)
     abs_force = abs(float(clip_force))
 
-    y = C@obs
-    obs_hat = compute_state_estimator(A, B, C, L, obs_hat, y, clip_force, dt)
-    y_hat = C@obs_hat
-    error = y - y_hat
-    print(error)
-
     # change magnitute of the applied force in CartPole
     env.force_mag = abs_force
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
+
+    y = C@obs
+    obs_hat = compute_state_estimator(A, B, C, L, obs_hat, y, clip_force, dt)
+    y_hat = C@obs_hat
+    error = y - y_hat
+    print(error)
 
     reward_total = reward_total+reward
     if done or truncated:
