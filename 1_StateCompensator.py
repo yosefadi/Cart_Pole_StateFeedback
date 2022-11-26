@@ -32,8 +32,8 @@ At = np.transpose(A)
 Bt = np.transpose(C)
 Ct = np.transpose(B)
 
-K = control.place(A, B, [-2, -0.5+1j, -0.5-1j, -9])
-L = control.place(At,Bt, [-12, -0.5+1j, -0.5-1j, -54])
+K = control.place(A, B, [-3, -0.5+1j, -0.5-1j, -10])
+L = control.place(At,Bt, [-18, -1+1j, -1-1j, -60])
 L = np.transpose(L)
 
 """
