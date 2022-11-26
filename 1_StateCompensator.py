@@ -9,7 +9,7 @@ mc = 1.0
 g = 9.8
 
 # get environment
-env = gym.make('CartPole-v0', render_mode="human")
+env = gym.make('CartPole-v1', render_mode="human")
 #env.env.seed(1)     # seed for reproducibility
 obs, info = env.reset(seed=1)
 reward_total = 0
@@ -28,20 +28,18 @@ B = np.array([[0],
 C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
-L = 10**0 * np.array([[3, 0],
-                      [2, -0.7137],
-                      [0, 2],
-                      [0, 17.7024]])
-
-# place the regulator pole to -1, -1+j5, -1-j5, -2
-K = 10**0 * np.array([[-4.2672,-6.7291,-36.4202,-7.2910]])
+L = 10**6 * np.array([[0.0032, 0.0022],
+                      [2.0835, 1.8055],
+                      [-0.0010, 0.0006],
+                      [-1.2469, -0.4731]])
+# place the regulator pole to -1, -1+j, -1-j, -2
+K = 10**8 * np.array([[-1.6618,-0.0277,-0.9583,-0.0160]])
 
 dt = 0.02
 
 def compute_state_estimator(A, B, C, L, x_hat, y, u, dt):
     x_hat_dot = A@x_hat + B@u + L@(y-C@x_hat)
-    x_hat_new = x_hat + x_hat_dot*dt
-    return x_hat_new
+    return x_hat_dot
 
 def apply_state_controller(K, x):
     # feedback controller
@@ -51,6 +49,7 @@ def apply_state_controller(K, x):
     return u
 
 obs_hat = obs
+print(obs)
 for i in range(1000):
     env.render()
 
@@ -65,7 +64,7 @@ for i in range(1000):
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     clip_force = np.clip(force, -10, 10)
-    abs_force = abs(float(clip_force))
+    abs_force = np.abs(float(clip_force))
 
     # change magnitute of the applied force in CartPole
     env.force_mag = abs_force
@@ -74,10 +73,11 @@ for i in range(1000):
     obs, reward, done, truncated, info = env.step(action)
 
     y = C@obs
-    obs_hat = compute_state_estimator(A, B, C, L, obs_hat, y, clip_force, dt)
+    obs_hat_dot = compute_state_estimator(A, B, C, L, obs_hat, y, clip_force, dt)
+    obs_hat = obs_hat + obs_hat_dot*dt
     y_hat = C@obs_hat
-    error = y - y_hat
-    print(error)
+    error = obs - obs_hat
+    #print(error)
 
     reward_total = reward_total+reward
     if done or truncated:
