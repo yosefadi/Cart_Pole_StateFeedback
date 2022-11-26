@@ -29,12 +29,12 @@ C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
 # place estimator pole to -60,-0.5+i,-0.5-i,-120
-L = 10**0 * np.array([[60.0004, -2.0107],
-                      [0.0336, -121.7227],
-                      [-0.0095, 120.9996],
-                      [74.3410, 136.9118]])
+L = 10**0 * np.array([[6.0297, -3.4927],
+                      [1.5123, -34.1024],
+                      [-1.2128, 30.9703],
+                      [5.2336, 48.9342]])
 # place the regulator pole to -10, -0.5+i, -0.5-i, -20
-K = 10**0 * np.array([[-20.5155,-19.4897,-180.5628,-32.4047]])
+K = 10**0 * np.array([[-0.5129,-1.0258,-19.3961,-5.3739]])
 
 dt = 0.02
 
@@ -50,8 +50,8 @@ def apply_state_controller(K, x):
     #print(u)
     return u
 
-obs_hat = obs
-#print(obs)
+obs_hat = np.zeros(4)
+print(obs_hat)
 iter = 0
 for i in range(1000):
     env.render()
@@ -81,7 +81,7 @@ for i in range(1000):
     obs_hat = obs_hat + obs_hat_dot*dt
     y_hat = C@obs_hat
     error = obs - obs_hat
-    print(error)
+    #print(error)
 
     iter = iter+1
 
