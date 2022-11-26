@@ -14,18 +14,19 @@ env = gym.make('CartPole-v1', render_mode="human")
 obs, info = env.reset(seed=1)
 reward_total = 0
 
+# System State Space Equation
 A = np.array([[0, 1, 0, 0],
-              [0, 0, -0.72, 0],
+              [0, 0, -mp*(mp * (g-l) + mc*g)/((mc+mp)*((4/3) * mc + (1/3) * mp)), 0],
               [0, 0, 0, 1],
-              [0, 0, 15.77, 0]])
+              [0, 0, (mp*(g-l) + mc * g)/(l*((4/3) * mc + (1/3) * mp)), 0]])
+
 B = np.array([[0],
-              [0.98],
+              [(1/(mc + mp) - mp/((mc + mp) * ((4/3) * mc + (1/3) * mp)))],
               [0],
-              [-1.46]])
+              [(-1/(l * ((4/3) * mc + (1/3) * mp)))]])
 
 C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
-
 # place the regulator pole to -10, -0.5+i, -0.5-i, -20
 K = control.place(A, B, [-2, -0.5+1j, -0.5-1j, -9])
 #K = 10**0 * np.array([[-20.5155,-19.4897,-180.5628,-32.4047]])
