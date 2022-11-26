@@ -1,6 +1,6 @@
 import gym
 import numpy as np
-import math
+import control
 
 l = 0.5
 mp = 0.1
@@ -28,7 +28,15 @@ B = np.array([[0],
 C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
+At = np.transpose(A)
+Bt = np.transpose(C)
+Ct = np.transpose(B)
 
+K = control.place(A, B, [-2, -0.5+1j, -0.5-1j, -9])
+L = control.place(At,Bt, [-12, -0.5+1j, -0.5-1j, -54])
+L = np.transpose(L)
+
+"""
 # place the regulator pole to -2, -0.5+i, -0.5-i, -9
 K = 10**0 * np.array([[-1.8464,-2.6055,-32.4639,-9.7001]])
 
@@ -38,6 +46,7 @@ L = 10**0 * np.array([[11.9567, -2.8508],
                       [0.8236, -58.2869],
                       [-1.0877, 55.0433],
                       [13.2195, 75.0915]])
+"""
 
 def compute_state_estimator(A, B, C, L, x_hat, x, u, dt):
     y = C@x
@@ -60,6 +69,7 @@ for i in range(1000):
 
     # MODIFY THIS PART
     action, force = apply_state_controller(K, obs_hat)
+    print("u:", force)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     clip_force = np.clip(force, -10, 10)
@@ -70,12 +80,14 @@ for i in range(1000):
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
+    print("obs: ", obs)
 
     # compute state estimator
     obs_hat_dot = compute_state_estimator(A, B, C, L, obs_hat, obs, clip_force, dt)
     obs_hat = obs_hat + obs_hat_dot*dt
+    print("obs_hat: ", obs_hat)
     error = obs - obs_hat
-    print(error)
+    print("estimator error: ", error)
 
     reward_total = reward_total+reward
     if done or truncated:
