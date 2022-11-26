@@ -29,15 +29,15 @@ C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
 
-# place the regulator pole to -1, -0.5+i, -0.5-i, -9
-K = 10**0 * np.array([[-0.9232,-1.7643,-25.0990,-8.5325]])
+# place the regulator pole to -2, -0.5+i, -0.5-i, -9
+K = 10**0 * np.array([[-1.8464,-2.6055,-32.4639,-9.7001]])
 
-# place estimator pole to -6,-0.5+i,-0.5-i,-54
+# place estimator pole to -12,-0.5+i,-0.5-i,-54
 # 6 times faster than regulator pole
-L = 10**0 * np.array([[6.0368, -4.8493],
-                      [2.4033, -60.8536],
-                      [-2.0127, 54.9632],
-                      [4.3043, 76.5090]])
+L = 10**0 * np.array([[11.9567, -2.8508],
+                      [0.8236, -58.2869],
+                      [-1.0877, 55.0433],
+                      [13.2195, 75.0915]])
 
 def compute_state_estimator(A, B, C, L, x_hat, y, u, dt):
     x_hat_dot = A@x_hat + B@u + L@(y - C@x_hat)
