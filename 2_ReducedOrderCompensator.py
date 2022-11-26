@@ -45,8 +45,8 @@ Bu = Br[2:]
 Cr = C
 Cr[:,[1,2]] = Cr[:, [2,1]]
 
-K = control.place(A, B, [-4, -0.5+1j, -0.5-1j, -11])
-L = control.place(np.transpose(Auu), np.transpose(Aau), [-3+6j, -3-6j])
+K = control.place(A, B, [-3, -0.25+0.5j, -0.25-0.5j, -11])
+L = control.place(np.transpose(Auu), np.transpose(Aau), [-2.5+7j, -2.5-7j])
 L = np.transpose(L)
 
 def compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, Lr, x, x_hat, y, xcc, u, dt):
@@ -97,6 +97,7 @@ for i in range(1000):
     print("obs: ", obs)
 
     y = C@obs
+    print("y: ", y)
     print("obs_hat: ", obs_hat)
     xcc,obs_hat = compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, L, obs, obs_hat, y, xcc, clip_force, dt)
 
