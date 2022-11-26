@@ -17,8 +17,8 @@ reward_total = 0
 # System State Space Equation
 Ar = np.array([[0, 0, 1, 0],
                [0, 0, 0, 1],
-               [0, 0, 0, -mp*(mp * (g-l) + mc*g)/((mc+mp)*((4/3) * mc + (1/3) * mp))],
-               [0, 0, 0, (mp*(g-l) + mc * g)/(l*((4/3) * mc + (1/3) * mp))]])
+               [0, -mp*(mp * (g-l) + mc*g)/((mc+mp)*((4/3) * mc + (1/3) * mp)), 0, 0],
+               [0, (mp*(g-l) + mc * g)/(l*((4/3) * mc + (1/3) * mp)), 0, 0]])
 
 Br = np.array([[0],
               [0],
@@ -28,22 +28,33 @@ Br = np.array([[0],
 Cr = np.array([[1, 0, 0, 0],
               [0, 1, 0, 0]])
 
-Aaa = np.array([[0, 0],
-                [0, 0]])    
+Aaa = Ar[:2,:2]
+Aau = Ar[:2,2:]
+Aua = Ar[2:,:2]
+Auu = Ar[2:,2:]
+Ba = Br[:2]
+Bu = Br[2:]
 
-Aau = np.array([[1, 0],
-                [0, 1]])
+A = np.empty([4,4])
+A[[0, 1, 2, 3]] = Ar[[0, 2, 1, 3]]
+A[:, [1, 2]] = A[:, [2, 1]]
 
-Aua = np.array([[0, 0],
-                [0, 0]])
+B = np.empty([4,1])
+B[[0, 1, 2, 3]] = Br[[0, 2, 1, 3]]
 
-Auu = np.array([[0, -mp*(mp * (g-l) + mc*g)/((mc+mp)*((4/3) * mc + (1/3) * mp))],
-                [0, (mp*(g-l) + mc * g)/(l*((4/3) * mc + (1/3) * mp))]])
+K = control.place(A, B, [-4, -0.5+1j, -0.5-1j, -11])
 
-def compute_state_estimator(A, B, C, L, x_hat, x, u, dt):
-    y = C@x
-    x_hat_dot = A@x_hat + B@u + L@(y - C@x_hat)
-    return x_hat_dot
+def compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, Lr, x_hat, x, u, dt):
+    x[[2,1]] = x[[1,2]]
+    y = Cr@x
+
+    x_hat[[2,1]] = x_hat[[2,1]]
+    xu_hat = x_hat[2:]
+
+    xc_dot = (Auu - Lr@Aau)@xu_hat + (Aua - Lr@Aaa)@y + (Bu - Lr@Ba)@u
+    xc = xc + xc_dot*dt
+    xb = xc + Lr@y
+    return xb
 
 def apply_state_controller(K, x):
     u = -K@x   # u = -Kx
@@ -60,7 +71,7 @@ for i in range(1000):
     env.render()
 
     # MODIFY THIS PART
-    action, force = apply_state_controller(K, obs_hat)
+    action, force = apply_state_controller(K, obs)
     print("u:", force)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
@@ -73,13 +84,6 @@ for i in range(1000):
     # apply action
     obs, reward, done, truncated, info = env.step(action)
     print("obs: ", obs)
-
-    # compute state estimator
-    obs_hat_dot = compute_state_estimator(A, B, C, L, obs_hat, obs, clip_force, dt)
-    obs_hat = obs_hat + obs_hat_dot*dt
-    print("obs_hat: ", obs_hat)
-    error = obs - obs_hat
-    print("estimator error: ", error)
 
     reward_total = reward_total+reward
     if done or truncated:
