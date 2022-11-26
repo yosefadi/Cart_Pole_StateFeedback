@@ -43,18 +43,24 @@ B = np.empty([4,1])
 B[[0, 1, 2, 3]] = Br[[0, 2, 1, 3]]
 
 K = control.place(A, B, [-4, -0.5+1j, -0.5-1j, -11])
+L = np.empty([4,])
 
 def compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, Lr, x_hat, x, u, dt):
     x[[2,1]] = x[[1,2]]
     y = Cr@x
 
     x_hat[[2,1]] = x_hat[[2,1]]
+    xa_hat = x_hat[:2]
     xu_hat = x_hat[2:]
 
     xc_dot = (Auu - Lr@Aau)@xu_hat + (Aua - Lr@Aaa)@y + (Bu - Lr@Ba)@u
     xc = xc + xc_dot*dt
-    xb = xc + Lr@y
-    return xb
+    xu_hat = xc + Lr@y
+    
+    x_hat_new = np.concatenate((xa_hat, xu_hat))
+    x_hat_new[[2,1]] = x_hat_new[[1,2]]
+    return x_hat_new
+    
 
 def apply_state_controller(K, x):
     u = -K@x   # u = -Kx
@@ -65,8 +71,6 @@ def apply_state_controller(K, x):
     return action, u
 
 obs_hat = np.zeros(4)
-print(obs_hat)
-iter = 0
 for i in range(1000):
     env.render()
 
@@ -84,6 +88,8 @@ for i in range(1000):
     # apply action
     obs, reward, done, truncated, info = env.step(action)
     print("obs: ", obs)
+
+    #obs_hat = compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, L, obs_hat, obs, force, dt)
 
     reward_total = reward_total+reward
     if done or truncated:
