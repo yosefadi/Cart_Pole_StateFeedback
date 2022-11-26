@@ -1,5 +1,6 @@
 import gym
 import numpy as np
+import control
 
 lp = 0.5
 mp = 0.1
@@ -26,7 +27,8 @@ C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
 # place the regulator pole to -10, -0.5+i, -0.5-i, -20
-K = 10**0 * np.array([[-20.5155,-19.4897,-180.5628,-32.4047]])
+K = control.place(A, B, [-2, -0.5+1j, -0.5-1j, -9])
+#K = 10**0 * np.array([[-20.5155,-19.4897,-180.5628,-32.4047]])
 
 #K = np.array([[ 1,1,1,1]])
 def apply_state_controller(K, x):
