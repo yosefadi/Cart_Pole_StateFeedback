@@ -51,3 +51,10 @@ print("B: \n", B)
 
 x_hat_new = np.empty([4,])
 print("x_hat_new: \n", x_hat_new)
+
+C = np.array([[1, 0, 0, 0],
+              [0, 0, 1, 0]])
+Cr = np.empty([2,4])
+Cr = C
+Cr[:,[1,2]] = Cr[:, [2,1]]
+print("Cr: \n", Cr)
