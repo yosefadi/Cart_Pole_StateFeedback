@@ -44,7 +44,7 @@ Bu = Br[2:]
 
 Cr = C
 
-K = control.place(A, B, [-3, -0.5+1j, -0.5-1j, -11])
+K = control.place(A, B, [-4, -0.5+1j, -0.5-1j, -11])
 L = control.place(np.transpose(Auu), np.transpose(Aau), [-3+6j, -3-6j])
 L = np.transpose(L)
 
