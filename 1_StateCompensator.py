@@ -86,8 +86,9 @@ for i in range(1000):
     obs_hat_dot = compute_state_estimator(A, B, C, L, obs_hat, obs, clip_force, dt)
     obs_hat = obs_hat + obs_hat_dot*dt
     print("obs_hat: ", obs_hat)
-    error = obs - obs_hat
-    print("estimator error: ", error)
+    error = np.abs(obs - obs_hat)
+    rae = error/abs(obs)
+    print("estimator relative error: ", rae, "%")
 
     reward_total = reward_total+reward
     if done or truncated:
