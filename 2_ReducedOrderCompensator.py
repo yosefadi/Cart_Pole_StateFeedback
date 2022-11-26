@@ -43,21 +43,20 @@ Ba = Br[:2]
 Bu = Br[2:]
 
 Cr = C
-Cr[:,[1,2]] = Cr[:, [2,1]]
 
-K = control.place(A, B, [-3, -0.25+0.5j, -0.25-0.5j, -11])
-L = control.place(np.transpose(Auu), np.transpose(Aau), [-2.5+7j, -2.5-7j])
+K = control.place(A, B, [-3, -0.5+1j, -0.5-1j, -11])
+L = control.place(np.transpose(Auu), np.transpose(Aau), [-3+6j, -3-6j])
 L = np.transpose(L)
 
-def compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, Lr, x, x_hat, y, xcc, u, dt):
-    x_hat_loc = x_hat
-    x_hat_loc[[1,2]] = x_hat_loc[[1,2]]
-    xu_hat = x_hat_loc[2:]
+def compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Lr, x, x_hat, y, xcc, u, dt):
+    xu_hat = np.empty([2,])
+    xu_hat[[0]] = x_hat[[1]]
+    xu_hat[[1]] = x_hat[[3]]
     print("xu_hat: ", xu_hat)
 
     xa = np.empty([2,])
     xa[[0]] = x[[0]]
-    xa[[1]] = x[[3]]
+    xa[[1]] = x[[2]]
     print("xa: ", xa)
 
     xcc_dot = (Auu - Lr@Aau)@xu_hat + (Aua - Lr@Aaa)@y + (Bu - Lr@Ba)@u
@@ -99,8 +98,9 @@ for i in range(1000):
     y = C@obs
     print("y: ", y)
     print("obs_hat: ", obs_hat)
-    xcc,obs_hat = compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, L, obs, obs_hat, y, xcc, clip_force, dt)
+    xcc,obs_hat = compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, L, obs, obs_hat, y, xcc, clip_force, dt)
 
+    print()
     reward_total = reward_total+reward
     if done or truncated:
         print(f'Terminated after {i+1} iterations.')
