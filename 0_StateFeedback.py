@@ -2,10 +2,10 @@ import gym
 import numpy as np
 import control
 
-lp = 0.5
+l = 0.5
 mp = 0.1
-mk = 1.0
-mt = mp+mk
+mc = 1.0
+#mt = mp+mk
 g = 9.8
 
 # get environment
