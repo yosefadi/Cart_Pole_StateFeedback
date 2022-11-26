@@ -39,17 +39,18 @@ L = 10**0 * np.array([[11.9567, -2.8508],
                       [-1.0877, 55.0433],
                       [13.2195, 75.0915]])
 
-def compute_state_estimator(A, B, C, L, x_hat, y, u, dt):
+def compute_state_estimator(A, B, C, L, x_hat, x, u, dt):
+    y = C@x
     x_hat_dot = A@x_hat + B@u + L@(y - C@x_hat)
     return x_hat_dot
 
 def apply_state_controller(K, x):
-    # feedback controller
-    # MODIFY THIS PARTS
-    #print(x)
     u = -K@x   # u = -Kx
-    #print(u)
-    return u
+    if u > 0:
+        action = 1
+    else:
+        action = 0 
+    return action, u
 
 obs_hat = np.zeros(4)
 print(obs_hat)
@@ -57,15 +58,8 @@ iter = 0
 for i in range(1000):
     env.render()
 
-    # get force direction (action) and force value (force)
-
     # MODIFY THIS PART
-    
-    force = apply_state_controller(K, obs_hat)
-    if force > 0:
-        action = 1
-    else:
-        action = 0 
+    action, force = apply_state_controller(K, obs_hat)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     clip_force = np.clip(force, -10, 10)
@@ -77,14 +71,11 @@ for i in range(1000):
     # apply action
     obs, reward, done, truncated, info = env.step(action)
 
-    y = C@obs
-    obs_hat_dot = compute_state_estimator(A, B, C, L, obs_hat, y, clip_force, dt)
+    # compute state estimator
+    obs_hat_dot = compute_state_estimator(A, B, C, L, obs_hat, obs, clip_force, dt)
     obs_hat = obs_hat + obs_hat_dot*dt
-    y_hat = C@obs_hat
     error = obs - obs_hat
-    #print(error)
-
-    iter = iter+1
+    print(error)
 
     reward_total = reward_total+reward
     if done or truncated:
