@@ -15,18 +15,25 @@ obs, info = env.reset(seed=1)
 reward_total = 0
 
 # System State Space Equation
-Ar = np.array([[0, 0, 1, 0],
-               [0, 0, 0, 1],
-               [0, -mp*(mp * (g-l) + mc*g)/((mc+mp)*((4/3) * mc + (1/3) * mp)), 0, 0],
-               [0, (mp*(g-l) + mc * g)/(l*((4/3) * mc + (1/3) * mp)), 0, 0]])
+A = np.array([[0, 1, 0, 0],
+              [0, 0, -mp*(mp * (g-l) + mc*g)/((mc+mp)*((4/3) * mc + (1/3) * mp)), 0],
+              [0, 0, 0, 1],
+              [0, 0, (mp*(g-l) + mc * g)/(l*((4/3) * mc + (1/3) * mp)), 0]])
 
-Br = np.array([[0],
-              [0],
+B = np.array([[0],
               [(1/(mc + mp) - mp/((mc + mp) * ((4/3) * mc + (1/3) * mp)))],
-              [(-1/(l * ((4/3) * mc + (1/3) * mp)))],])
+              [0],
+              [(-1/(l * ((4/3) * mc + (1/3) * mp)))]])
 
-Cr = np.array([[1, 0, 0, 0],
-              [0, 1, 0, 0]])
+C = np.array([[1, 0, 0, 0],
+              [0, 0, 1, 0]])
+
+Ar = np.empty([4,4])
+Ar[[0, 1, 2, 3]] = A[[0, 2, 1, 3]]
+Ar[:, [1, 2]] = Ar[:, [2, 1]]
+
+Br = np.empty([4,1])
+Br[[0, 1, 2, 3]] = B[[0, 2, 1, 3]]
 
 Aaa = Ar[:2,:2]
 Aau = Ar[:2,2:]
@@ -35,33 +42,27 @@ Auu = Ar[2:,2:]
 Ba = Br[:2]
 Bu = Br[2:]
 
-A = np.empty([4,4])
-A[[0, 1, 2, 3]] = Ar[[0, 2, 1, 3]]
-A[:, [1, 2]] = A[:, [2, 1]]
-
-B = np.empty([4,1])
-B[[0, 1, 2, 3]] = Br[[0, 2, 1, 3]]
+Cr = C
+Cr[:,[1,2]] = Cr[:, [2,1]]
 
 K = control.place(A, B, [-4, -0.5+1j, -0.5-1j, -11])
-L = np.empty([4,])
+L = control.place(np.transpose(Auu), np.transpose(Aau), [-1, -0.5])
+L = np.transpose(L)
 
-def compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, Lr, x_hat, x, u, dt):
-    x[[2,1]] = x[[1,2]]
-    y = Cr@x
+def compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, Lr, x_hat, y, xcc, u, dt):
+    x_hat_loc = x_hat
+    x_hat_loc[[1,2]] = x_hat_loc[[1,2]]
+    xa_hat = x_hat_loc[:2]
+    xu_hat = x_hat_loc[2:]
 
-    x_hat[[2,1]] = x_hat[[2,1]]
-    xa_hat = x_hat[:2]
-    xu_hat = x_hat[2:]
-
-    xc_dot = (Auu - Lr@Aau)@xu_hat + (Aua - Lr@Aaa)@y + (Bu - Lr@Ba)@u
-    xc = xc + xc_dot*dt
-    xu_hat = xc + Lr@y
+    xcc_dot = (Auu - Lr@Aau)@xu_hat + (Aua - Lr@Aaa)@y + (Bu - Lr@Ba)@u
+    xcc = xcc + xcc_dot*dt
+    xu_hat = xcc + Lr@y
     
     x_hat_new = np.concatenate((xa_hat, xu_hat))
     x_hat_new[[2,1]] = x_hat_new[[1,2]]
-    return x_hat_new
+    return xcc,x_hat_new
     
-
 def apply_state_controller(K, x):
     u = -K@x   # u = -Kx
     if u > 0:
@@ -71,11 +72,12 @@ def apply_state_controller(K, x):
     return action, u
 
 obs_hat = np.zeros(4)
+xcc = np.zeros(2)
 for i in range(1000):
     env.render()
 
     # MODIFY THIS PART
-    action, force = apply_state_controller(K, obs)
+    action, force = apply_state_controller(K, obs_hat)
     print("u:", force)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
@@ -89,7 +91,8 @@ for i in range(1000):
     obs, reward, done, truncated, info = env.step(action)
     print("obs: ", obs)
 
-    #obs_hat = compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, L, obs_hat, obs, force, dt)
+    y = C@obs
+    xcc,obs_hat = compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Cr, L, obs_hat, y, xcc, clip_force, dt)
 
     reward_total = reward_total+reward
     if done or truncated:
