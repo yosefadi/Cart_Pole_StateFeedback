@@ -28,12 +28,12 @@ B = np.array([[0],
 C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
-# place estimator pole to -60,-0.5+i,-0.5-i,-120
+# place estimator pole to -6,-0.5+i,-0.5-i,-42
 L = 10**0 * np.array([[6.0296, -4.1877],
                       [1.9812, -47.4969],
                       [-1.6359, 42.9704],
                       [4.7417, 62.7275]])
-# place the regulator pole to -1, -0.5+i, -0.5-i, -5
+# place the regulator pole to -1, -0.5+i, -0.5-i, -7
 K = 10**0 * np.array([[-0.7180,-1.3951,-22.2476,-6.9532]])
 
 dt = 0.02
