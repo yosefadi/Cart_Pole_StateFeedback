@@ -25,8 +25,9 @@ B = np.array([[0],
               [0],
               [(-1/(l * ((4/3) * mc + (1/3) * mp)))]])
 
-C = np.array([[0, 0, 1, 0]])
-
+C = np.array([[1, 0, 0, 0],
+              [0, 0, 1, 0]])
+              
 # Augmented SS Equation for Robust Tracking
 A_aug = np.block([[np.zeros([C.shape[0],C.shape[0]]), C],
                   [np.zeros([A.shape[0],C.shape[0]]), A]])
@@ -50,7 +51,7 @@ w = np.reshape(w,1)
 
 # desired pole
 P = np.array([-0.25+0.5j, -0.25-0.5j, -10, -20])
-P_aug = np.array([-0.5+0.5j,-0.5-0.5j,-5,-6,-10])
+P_aug = np.array([-0.5+0.1j,-0.1-0.1j,-0.2,-0.3,-0.4])
 
 # compute regulator gain
 K = control.place(A,B,P)
