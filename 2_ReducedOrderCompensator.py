@@ -68,7 +68,7 @@ def compute_reduced_observer(x, x_hat, y, xcc, u):
     x_hat_new[[2,1]] = x_hat_new[[1,2]]
     return xcc,x_hat_new
     
-def apply_state_controller(K, x):
+def apply_state_controller(x):
     u = -K@x   # u = -Kx
     if u > 0:
         action = 1
@@ -87,7 +87,7 @@ for i in range(1000):
     env.render()
 
     # MODIFY THIS PART
-    action, force = apply_state_controller(K, obs_hat)
+    action, force = apply_state_controller(obs_hat)
     print("u:", force)
     u_array.append(force)
 
