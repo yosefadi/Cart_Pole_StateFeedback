@@ -77,8 +77,13 @@ force = np.zeros([1,])
 u_array = []
 x_array = []
 theta_array = []
+t_array = []
 
 for i in range(1000):
+    # time logging
+    t = i*dt
+    t_array.append(t)
+
     env.render()
     
     # log state
@@ -119,7 +124,7 @@ for i in range(1000):
     print()
     if done or truncated:
         print(f'Terminated after {i+1} iterations.')
-        print(reward_total)
+        print("reward: ", reward_total)
 
         x_array_abs = []
         for i in range(len(x_array)):

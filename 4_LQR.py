@@ -52,8 +52,13 @@ def apply_state_controller(K, x):
 
 u_array = []
 theta_array = []
+t_array = []
 
 for i in range(1000):
+    # time logging
+    t = i*dt
+    t_array.append(t)
+
     env.render()
 
     # print current state

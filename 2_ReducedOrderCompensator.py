@@ -92,12 +92,17 @@ def apply_state_controller(x):
         action = 0 
     return action, u
 
-obs_hat = np.zeros(4)
-xcc = np.zeros(2)
+obs_hat = np.zeros(4,)
+xcc = np.zeros(2,)
 u_array = []
 theta_array = []
+t_array = []
 
 for i in range(1000):
+    # time logging
+    t = i*dt
+    t_array.append(t)
+
     env.render()
 
     # states data logging

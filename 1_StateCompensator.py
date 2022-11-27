@@ -59,8 +59,13 @@ obs_hat = np.zeros(4)
 print(obs_hat)
 u_array = []
 theta_array = []
+t_array = []
 
 for i in range(1000):
+    # time logging
+    t = i*dt
+    t_array.append(t)
+
     env.render()
 
     # states data logging
