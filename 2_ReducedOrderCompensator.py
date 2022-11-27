@@ -1,7 +1,4 @@
 """
-Copyright (c) 2022 Yosef Adi Sulistyo
-All rights reserved.
-
 References:   https://pages.jh.edu/piglesi1/Courses/454/Notes6.pdf
 Implemented in python with numpy
 """
@@ -36,6 +33,7 @@ B = np.array([[0],
 C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
+# reorganize matrices
 Ar = np.empty([4,4])
 Ar[[0, 1, 2, 3]] = A[[0, 2, 1, 3]]
 Ar[:, [1, 2]] = Ar[:, [2, 1]]
@@ -43,6 +41,9 @@ Ar[:, [1, 2]] = Ar[:, [2, 1]]
 Br = np.empty([4,1])
 Br[[0, 1, 2, 3]] = B[[0, 2, 1, 3]]
 
+# partitioned matrices
+# a = available states
+# u = unavailable states
 Aaa = Ar[:2,:2]
 Aau = Ar[:2,2:]
 Aua = Ar[2:,:2]
@@ -50,9 +51,11 @@ Auu = Ar[2:,2:]
 Ba = Br[:2]
 Bu = Br[2:]
 
+# desired poles
 P = np.array([-0.25+0.5j, -0.25-0.5j, -10, -20])
 Pt = 6 * P[:2]
 
+# compute regulator and observer gains
 K = control.place(A, B, P)
 L = control.place(np.transpose(Auu), np.transpose(Aau), Pt)
 L = np.transpose(L)
