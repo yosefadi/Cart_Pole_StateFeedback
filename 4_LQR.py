@@ -108,7 +108,7 @@ for i in range(1000):
 
         for i in range(len(theta_array)):
             if np.abs(theta_array[i]) < 1e-3:
-                peak_time = np.around(i * dt,3)
+                peak_time = np.around(i * dt,3)/2
                 print("peak_time: ", peak_time, "s")
                 break
 
