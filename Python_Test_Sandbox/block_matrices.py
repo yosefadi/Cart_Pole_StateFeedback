@@ -17,8 +17,7 @@ B = np.array([[0],
               [0],
               [(-1/(l * ((4/3) * mc + (1/3) * mp)))]])
 
-C = np.array([[1, 0, 0, 0],
-              [0, 0, 1, 0]])
+C = np.array([[1, 0, 0, 0]])
 
 # Augmented SS Equation for Robust Tracking
 A_aug = np.block([[np.zeros([C.shape[0],C.shape[0]]), C],
