@@ -42,7 +42,7 @@ Auu = Ar[2:,2:]
 Ba = Br[:2]
 Bu = Br[2:]
 
-P = np.array([-0.5+1j, -0.5-1j, -10, -20])
+P = np.array([-0.25+0.5j, -0.25-0.5j, -10, -20])
 Pt = 6 * P[:2]
 
 K = control.place(A, B, P)
