@@ -27,4 +27,4 @@ print(A_aug)
 
 B_aug = np.block([[np.zeros([C.shape[0],1])],
                   [B]])
-#print(B_aug)
+print(B_aug)
