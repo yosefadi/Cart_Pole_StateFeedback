@@ -89,6 +89,7 @@ for i in range(1000):
     rae = error/abs(obs)
     print("estimator relative error: ", rae, "%")
 
+    print()
     reward_total = reward_total+reward
     if done or truncated:
         for i in range(len(u_array)):
