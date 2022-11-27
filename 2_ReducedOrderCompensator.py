@@ -50,15 +50,15 @@ L = control.place(np.transpose(Auu), np.transpose(Aau), Pt)
 L = np.transpose(L)
 
 def compute_reduced_observer(x, x_hat, y, xcc, u):
-    xu_hat = np.empty([2,])
-    xu_hat[[0]] = x_hat[[1]]
-    xu_hat[[1]] = x_hat[[3]]
-    print("xu_hat: ", xu_hat)
-
     xa = np.empty([2,])
     xa[[0]] = x[[0]]
     xa[[1]] = x[[2]]
     print("xa: ", xa)
+
+    xu_hat = np.empty([2,])
+    xu_hat[[0]] = x_hat[[1]]
+    xu_hat[[1]] = x_hat[[3]]
+    print("xu_hat: ", xu_hat)
 
     xcc_dot = (Auu - L@Aau)@xu_hat + (Aua - L@Aaa)@y + (Bu - L@Ba)@u
     xcc = xcc + xcc_dot*dt
