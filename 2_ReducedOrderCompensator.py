@@ -105,6 +105,8 @@ search_theta = 0
 for i in range(1000):
     env.render()
 
+    theta_array.append(obs[2])
+    
     # MODIFY THIS PART
     action, force = apply_state_controller(obs_hat)
     print("u:", force)
@@ -119,7 +121,6 @@ for i in range(1000):
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
-    theta_array.append(obs[2])
     print("obs: ", obs)
 
     y = C@obs
