@@ -34,7 +34,7 @@ Bt = np.transpose(C)
 Ct = np.transpose(B)
 
 # desired pole
-P = np.array([-10, -1+1j, -1-1j, -20])
+P = np.array([-10, -0.25+0.25j, -0.25-0.25j, -20])
 Pt = 4*P
 
 # compute regulator and observer gain
@@ -119,7 +119,7 @@ for i in range(1000):
         print("overshoot: ", overshoot_deg, "degree")
 
         for i in range(len(theta_array)):
-            if theta_array[i] == search_theta:
+            if np.abs(theta_array[i]) < 1e-3:
                 peak_time = np.around(i * dt,3)
                 print("peak_time: ", peak_time, "s")
                 break
