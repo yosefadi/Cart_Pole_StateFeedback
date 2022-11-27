@@ -41,6 +41,9 @@ Ar[:, [1, 2]] = Ar[:, [2, 1]]
 Br = np.array(B, copy=True)
 Br[[0, 1, 2, 3]] = Br[[0, 2, 1, 3]]
 
+Cr = np.array(C, copy=True)
+Cr[:,[1,2]] = Cr[:,[2,1]]
+
 # partitioned matrices
 # a = available states
 # u = unavailable states
