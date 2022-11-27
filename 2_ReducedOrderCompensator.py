@@ -42,11 +42,11 @@ Auu = Ar[2:,2:]
 Ba = Br[:2]
 Bu = Br[2:]
 
-#Cr = C
+P = np.array([-0.5+1j, -0.5-1j, -10, -20])
+Pt = 6 * P[:2]
 
-P = np.array([-10, -0.5+1j, -0.5-1j, -20])
 K = control.place(A, B, P)
-L = control.place(np.transpose(Auu), np.transpose(Aau), [-3+6j, -3-6j])
+L = control.place(np.transpose(Auu), np.transpose(Aau), Pt)
 L = np.transpose(L)
 
 def compute_reduced_observer(x, x_hat, y, xcc, u):
