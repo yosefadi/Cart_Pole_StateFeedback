@@ -51,7 +51,7 @@ w = np.reshape(w,1)
 
 # desired pole
 P = np.array([-0.25+0.5j, -0.25-0.5j, -10, -20])
-P_aug = np.array([-0.1+0.1j,-0.1-0.1j,-0.2-j,-0.2+j,-10,-5])
+P_aug = np.array([-0.1+0.1j,-0.1-0.1j,-0.2-1j,-0.2+1j,-10,-5])
 
 # compute regulator gain
 K = control.place(A,B,P)
