@@ -9,9 +9,10 @@ g = 9.8
 dt = 0.02
 
 # get environment
-env = gym.make('CartPole-v1', render_mode="human")
+env = gym.make('CartPole-v1', render_mode="human").unwrapped
 #env.env.seed(1)     # seed for reproducibility
 obs, info = env.reset(seed=1)
+reward_threshold = 475
 reward_total = 0
 
 # System State Space Equation
@@ -37,7 +38,6 @@ B_aug = np.block([[np.zeros([C.shape[0],1])],
 print("B_aug: ", B_aug)
 
 B_L = np.array(B_aug, copy=True)
-
 
 # noise/disturbance 
 w = np.array([0.5])
@@ -122,7 +122,7 @@ for i in range(1000):
 
     reward_total = reward_total+reward
     print()
-    if done or truncated:
+    if done or truncated or reward_total == reward_threshold:
         print(f'Terminated after {i+1} iterations.')
         print("reward: ", reward_total)
 

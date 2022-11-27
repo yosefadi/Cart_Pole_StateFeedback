@@ -14,9 +14,10 @@ g = 9.8
 dt = 0.02  # from openai gym docs
 
 # get environment
-env = gym.make('CartPole-v1', render_mode="human")
+env = gym.make('CartPole-v1', render_mode="human").unwrapped
 #env.env.seed(1)     # seed for reproducibility
 obs, info = env.reset(seed=1)
+reward_threshold = 475
 reward_total = 0
 
 # System State Space Equation
@@ -55,7 +56,7 @@ Ba = Br[:2]
 Bu = Br[2:]
 
 # desired poles
-P = np.array([-0.25+0.25j, -0.25-0.25j, -10, -20])
+P = np.array([-1+1j, -1-1j, -10, -20])
 Pt = 10 * P[:2]
 
 # compute regulator and observer gains
@@ -132,7 +133,7 @@ for i in range(1000):
 
     print()
     reward_total = reward_total+reward
-    if done or truncated:
+    if done or truncated or reward_total == reward_threshold:
         print(f'Terminated after {i+1} iterations.')
         print("reward: ", reward_total)
 

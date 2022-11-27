@@ -9,9 +9,10 @@ g = 9.8
 dt = 0.02  # from openai gym docs
 
 # get environment
-env = gym.make('CartPole-v1', render_mode="human")
+env = gym.make('CartPole-v1', render_mode="human").unwrapped
 #env.env.seed(1)     # seed for reproducibility
 obs, info = env.reset(seed=1)
+reward_threshold = 475
 reward_total = 0
 
 # System State Space Equation
@@ -33,12 +34,12 @@ Bt = np.transpose(C)
 Ct = np.transpose(B)
 
 # desired pole
-P = np.array([-10, -0.05+0.025j, -0.05-0.025j, -20])
+P = np.array([-10, -1+1j, -1-1j, -20])
 Pt = 4*P
 
 # compute regulator and observer gain
 K = control.place(A, B, P)
-L = control.place(At,Bt, Pt)
+L = control.place(At, Bt, Pt)
 L = np.transpose(L)
 
 def compute_state_estimator(x_hat, x, u):
@@ -75,7 +76,7 @@ for i in range(1000):
 
     # MODIFY THIS PART
     action, force = apply_state_controller(obs_hat)
-    print("u:", force)
+    print("u: ", force)
     u_array.append(force)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
@@ -93,7 +94,7 @@ for i in range(1000):
 
     print()
     reward_total = reward_total+reward
-    if done or truncated:
+    if done or truncated or reward_total == reward_threshold:
         print(f'Terminated after {i+1} iterations.')
         print("reward: ", reward_total)
 
@@ -117,8 +118,8 @@ for i in range(1000):
         overshoot_deg = np.around(np.rad2deg(theta_abs),3)
         print("overshoot: ", overshoot_deg, "degree")
 
-        for i in range(len(theta_array)):
-            if theta_array[i] == search_theta:
+        for i in range(len(theta_array)-1):
+            if theta_array[i+1] == search_theta:
                 peak_time = np.around(i * dt,3)
                 print("peak_time: ", peak_time, "s")
                 break

@@ -9,9 +9,10 @@ g = 9.8
 dt = 0.02
 
 # get environment
-env = gym.make('CartPole-v1', render_mode="human")
+env = gym.make('CartPole-v1', render_mode="human").unwrapped
 #env.env.seed(1)     # seed for reproducibility
 obs, info = env.reset(seed=1)
+reward_threshold = 475
 reward_total = 0
 
 # ADD SOMETHING HERE
@@ -75,14 +76,14 @@ for i in range(1000):
     abs_force = abs(float(np.clip(force, -10, 10)))
     
     # change magnitute of the applied force in CartPole
-    env.env.force_mag = abs_force
+    env.force_mag = abs_force
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
 
     reward_total = reward_total+reward
     print()
-    if done or truncated:
+    if done or truncated or reward_total == reward_threshold:
         print(f'Terminated after {i+1} iterations.')
         print("reward: ", reward_total)
 
