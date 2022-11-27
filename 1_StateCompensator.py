@@ -102,6 +102,13 @@ for i in range(1000):
 
         theta_max = np.amax(theta_array)
         print("theta_max: ", theta_max * 180/np.pi, "degree")
+
+        for i in range(len(theta_array)):
+            if theta_array[i] == theta_max:
+                peak_time = i * dt
+                print("peak_time: ", peak_time, "s")
+                break
+
         obs, info = env.reset()
         break
 
