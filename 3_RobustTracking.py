@@ -27,30 +27,42 @@ B = np.array([[0],
 
 C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
-              
-# place the regulator pole to -10, -0.5+i, -0.5-i, -20
-K = control.place(A, B, [-2, -0.5+1j, -0.5-1j, -9])
 
-def apply_state_controller(K, x):
+# Augmented SS Equation for Robust Tracking
+A_aug = np.block([[np.zeros([C.shape[0],C.shape[0]]), C],
+                  [np.zeros([A.shape[0],C.shape[0]]), A]])
+
+B_aug = np.block([[np.zeros([C.shape[0],1])],
+                  [B]])
+
+# noise/disturbance 
+w = 0.5
+
+# place the regulator pole to -10, -0.5+i, -0.5-i, -20
+P = np.array([-2, -0.5+1j, -0.5-1j, -9, -10, -7])
+K = control.place(A_aug, B_aug, P)
+
+def apply_state_controller(x):
     # feedback controller
     # MODIFY THIS PARTS
     u = -K@x   # u = -Kx
     #print(u)
-    return u
+    if u > 0:
+        action = 1
+    else:
+        action = 0
+    return action, u
 
 print(obs)
 for i in range(1000):
     env.render()
     
-    # get force direction (action) and force value (force)
+    obs_tilda = np.block([[np.zeros([C.shape[0],1])],
+                          [obs.reshape([4,1])]])
 
     # MODIFY THIS PART
-    force = apply_state_controller(K, obs)
-    if force > 0:
-        action = 1
-    else:
-        action = 0
-
+    action, force = apply_state_controller(obs_tilda)
+    
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     abs_force = abs(float(np.clip(force, -10, 10)))
     
