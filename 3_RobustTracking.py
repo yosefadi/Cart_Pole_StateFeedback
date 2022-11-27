@@ -39,9 +39,12 @@ B_L = np.array(B_aug, copy=True)
 for i in range(B_L.shape[0]):
     if B_L[i] != 0:
         B_L[i] = 1
+    else:
+        B_L[i] = 0
 
 # noise/disturbance 
-w = 0.5
+w = np.array([0.5])
+w = np.reshape(w,1)
 
 # place the regulator pole to -10, -0.5+i, -0.5-i, -20
 #P = np.array([-0.25+0.5j, -0.25-0.5j, -10, -20])
@@ -49,11 +52,15 @@ P_aug = np.array([-2, -0.5+1j, -0.5-1j, -4, -3, -1])
 #K = control.place(A,B,P)
 K_aug = control.place(A_aug, B_aug, P_aug)
 
+def f_aug_linear(x, u):
+    x_aug_dot = A_aug@x + B_aug@u + B_L@w
+    return x_aug_dot
+
 def apply_state_controller(x):
     # feedback controller
     # MODIFY THIS PARTS
     u_aug = -K_aug @ x
-    print(u_aug)
+    #print(u_aug)
     if u_aug > 0:
         action = 1
     else:
@@ -69,6 +76,11 @@ for i in range(1000):
     
     # MODIFY THIS PART
     action, force = apply_state_controller(obs_aug)
+
+    obs_aug_dot = f_aug_linear(obs_aug, force)
+    obs_aug = obs_aug + obs_aug_dot * dt
+
+    print(obs_aug)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     abs_force = abs(float(np.clip(force, -10, 10)))
