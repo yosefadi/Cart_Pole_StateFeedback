@@ -89,9 +89,6 @@ for i in range(1000):
     print("obs: ", obs)
     print("obs_aug: ", obs_aug)
 
-    obs_aug_dot = f_aug_linear(obs_aug, force)
-    obs_aug = obs_aug + obs_aug_dot * dt
-
     # MODIFY THIS PART
     action, force = apply_state_controller(obs_aug)
 
@@ -104,6 +101,9 @@ for i in range(1000):
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
+    
+    obs_aug_dot = f_aug_linear(obs_aug, force)
+    obs_aug = obs_aug + obs_aug_dot * dt
 
     for n in range(obs.shape[0]):
         obs_aug[n+C.shape[0]] = obs[n]
