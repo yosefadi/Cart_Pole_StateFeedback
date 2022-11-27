@@ -107,7 +107,7 @@ for i in range(1000):
         print("overshoot: ", overshoot_deg, "degree")
 
         for i in range(len(theta_array)):
-            if theta_array[i] == search_theta:
+            if np.abs(theta_array[i]) < 1e-3:
                 peak_time = np.around(i * dt,3)
                 print("peak_time: ", peak_time, "s")
                 break
