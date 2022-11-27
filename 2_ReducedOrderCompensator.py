@@ -69,8 +69,8 @@ def compute_reduced_observer(x, x_hat, y, xcc, u):
 
     x_hat_copy = np.array(x_hat, copy=True)
     xu_hat = np.empty([2,])
-    xu_hat[[0]] = x_hat[[1]]
-    xu_hat[[1]] = x_hat[[3]]
+    xu_hat[[0]] = x_hat_copy[[1]]
+    xu_hat[[1]] = x_hat_copy[[3]]
     print("xu_hat: ", xu_hat)
 
     xcc_dot = (Auu - L@Aau)@xu_hat + (Aua - L@Aaa)@y + (Bu - L@Ba)@u
