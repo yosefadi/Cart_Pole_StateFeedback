@@ -56,8 +56,8 @@ Ba = Br[:2]
 Bu = Br[2:]
 
 # desired poles
-P = np.array([-1+1j, -1-1j, -10, -20])
-Pt = 10 * P[:2]
+P = np.array([-0.25+0.25j, -0.25-0.25j, -20, -30])
+Pt = 6 * P[:2]
 
 # compute regulator and observer gains
 K = control.place(A, B, P)
