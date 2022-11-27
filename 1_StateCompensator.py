@@ -58,16 +58,14 @@ def apply_state_controller(x):
 obs_hat = np.zeros(4)
 print(obs_hat)
 u_array = []
-u_total = 0
 theta_array = []
-theta_max = 0
-theta_min = 0
-theta_abs = 0
-search_theta = 0
 
 for i in range(1000):
     env.render()
 
+    # states data logging
+    print("obs: ", obs)
+    print("obs_hat: ", obs_hat)
     theta_array.append(obs[2])
 
     # MODIFY THIS PART
@@ -84,25 +82,21 @@ for i in range(1000):
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
-    print("obs: ", obs)
 
     # compute state estimator
     obs_hat = compute_state_estimator(obs_hat, obs, clip_force)
-    print("obs_hat: ", obs_hat)
-    error = np.abs(obs - obs_hat)
-    rae = error/abs(obs)
-    print("estimator relative error: ", rae, "%")
 
     print()
     reward_total = reward_total+reward
     if done or truncated:
-        for i in range(len(u_array)):
-            u_total += np.abs(u_array[i])
-
         print(f'Terminated after {i+1} iterations.')
         print("reward: ", reward_total)
 
-        u_avg = np.around(u_total/len(u_array),3)
+        u_array_abs = []
+        for i in range(len(u_array)):
+            u_array_abs.append(np.abs(u_array[i]))
+
+        u_avg = np.around(np.mean(u_array_abs),3)
         print("force_avg: ", u_avg, "N")
 
         theta_min = np.amin(theta_array)

@@ -81,6 +81,12 @@ theta_array = []
 for i in range(1000):
     env.render()
     
+    # log state
+    x_array.append(obs[0])
+    theta_array.append(obs[2])
+    print("obs: ", obs)
+    print("obs_aug: ", obs_aug)
+
     # MODIFY THIS PART
     force = apply_state_controller(obs_aug)
     u_array.append(force)
@@ -102,14 +108,9 @@ for i in range(1000):
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
-    x_array.append(obs[0])
-    theta_array.append(obs[2])
 
     obs_aug_dot = f_aug_linear(obs_aug, force)
     obs_aug = obs_aug + obs_aug_dot * dt
-
-    print("obs: ", obs)
-    print("obs_aug: ", obs_aug)
 
     for n in range(obs.shape[0]):
         obs_aug[n+C.shape[0]] = obs[n]
