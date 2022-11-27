@@ -98,6 +98,9 @@ u_array = []
 u_total = 0
 theta_array = []
 theta_max = 0
+theta_min = 0
+theta_abs = 0
+search_theta = 0
 
 for i in range(1000):
     env.render()
@@ -137,10 +140,18 @@ for i in range(1000):
         print("u_avg: ", u_avg)
 
         theta_max = np.amax(theta_array)
-        print("theta_max: ", theta_max * 180/np.pi, "degree")
+        theta_min = np.amin(theta_array)
+        if theta_max > np.abs(theta_min):
+            theta_abs = theta_max
+            search_theta = theta_max
+        else:
+            theta_abs = np.abs(theta_min)
+            search_theta = theta_min
+        
+        print("overshoot: ", theta_abs * 180/np.pi, "degree")
 
         for i in range(len(theta_array)):
-            if theta_array[i] == theta_max:
+            if theta_array[i] == search_theta:
                 peak_time = i * dt
                 print("peak_time: ", peak_time, "s")
                 break
