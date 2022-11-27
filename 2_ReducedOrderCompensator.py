@@ -106,7 +106,7 @@ for i in range(1000):
     env.render()
 
     theta_array.append(obs[2])
-    
+
     # MODIFY THIS PART
     action, force = apply_state_controller(obs_hat)
     print("u:", force)
@@ -138,7 +138,7 @@ for i in range(1000):
         print("reward: ", reward_total)
 
         u_avg = u_total/len(u_array)
-        print("u_avg: ", u_avg)
+        print("force_avg: ", u_avg, "N")
 
         theta_max = np.amax(theta_array)
         theta_min = np.amin(theta_array)
