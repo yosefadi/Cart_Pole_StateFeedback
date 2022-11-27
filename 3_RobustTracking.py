@@ -37,11 +37,6 @@ B_aug = np.block([[np.zeros([C.shape[0],1])],
 print("B_aug: ", B_aug)
 
 B_L = np.array(B_aug, copy=True)
-for i in range(B_L.shape[0]):
-    if B_L[i] != 0:
-        B_L[i] = 1
-    else:
-        B_L[i] = 0
 
 
 # noise/disturbance 
@@ -50,7 +45,7 @@ w = np.reshape(w,1)
 
 # desired pole
 P = np.array([-0.25+0.5j, -0.25-0.5j, -10, -20])
-P_aug = np.array([-0.1+0.1j,-0.1-0.1j,-0.2-1j,-0.2+1j,-10])
+P_aug = np.array([-0.5+1j,-0.5-1j,-1+5j,-1-5j,-15])
 
 # compute regulator gain
 K = control.place(A,B,P)
@@ -59,7 +54,7 @@ K_aug = control.place(A_aug, B_aug, P_aug)
 print("K_aug: ", K_aug)
 
 def f_aug_linear(x, u):
-    x_aug_dot = A_aug@x + B_aug@(u+w)
+    x_aug_dot = A_aug@x + B_aug@u + B_L@u
     return x_aug_dot
 
 def apply_state_controller(x):
@@ -86,9 +81,6 @@ force = np.zeros([1,])
 for i in range(1000):
     env.render()
     
-    print("obs: ", obs)
-    print("obs_aug: ", obs_aug)
-
     # MODIFY THIS PART
     action, force = apply_state_controller(obs_aug)
 
@@ -101,15 +93,20 @@ for i in range(1000):
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
-    
+
     obs_aug_dot = f_aug_linear(obs_aug, force)
     obs_aug = obs_aug + obs_aug_dot * dt
+
+    print("obs: ", obs)
+    print("obs_aug: ", obs_aug)
 
     for n in range(obs.shape[0]):
         obs_aug[n+C.shape[0]] = obs[n]
 
     reward_total = reward_total+reward
     if done or truncated:
+        ess = obs[0] - 0
+        print("ess: ", ess)
         print(f'Terminated after {i+1} iterations.')
         print(reward_total)
         obs, info = env.reset()
