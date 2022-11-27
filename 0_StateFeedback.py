@@ -5,7 +5,6 @@ import control
 l = 0.5
 mp = 0.1
 mc = 1.0
-#mt = mp+mk
 g = 9.8
 
 # get environment
