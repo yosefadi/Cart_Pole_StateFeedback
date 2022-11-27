@@ -34,12 +34,12 @@ C = np.array([[1, 0, 0, 0],
               [0, 0, 1, 0]])
 
 # reorganize matrices
-Ar = np.empty([4,4])
-Ar[[0, 1, 2, 3]] = A[[0, 2, 1, 3]]
+Ar = np.array(A, copy=True)
+Ar[[0, 1, 2, 3]] = Ar[[0, 2, 1, 3]]
 Ar[:, [1, 2]] = Ar[:, [2, 1]]
 
-Br = np.empty([4,1])
-Br[[0, 1, 2, 3]] = B[[0, 2, 1, 3]]
+Br = np.array(B, copy=True)
+Br[[0, 1, 2, 3]] = Br[[0, 2, 1, 3]]
 
 # partitioned matrices
 # a = available states
@@ -61,11 +61,13 @@ L = control.place(np.transpose(Auu), np.transpose(Aau), Pt)
 L = np.transpose(L)
 
 def compute_reduced_observer(x, x_hat, y, xcc, u):
+    xcopy = np.array(x, copy=True)
     xa = np.empty([2,])
-    xa[[0]] = x[[0]]
-    xa[[1]] = x[[2]]
+    xa[[0]] = xcopy[[0]]
+    xa[[1]] = xcopy[[2]]
     print("xa: ", xa)
 
+    x_hat_copy = np.array(x_hat, copy=True)
     xu_hat = np.empty([2,])
     xu_hat[[0]] = x_hat[[1]]
     xu_hat[[1]] = x_hat[[3]]
