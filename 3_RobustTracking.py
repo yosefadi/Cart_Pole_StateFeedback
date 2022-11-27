@@ -31,9 +31,11 @@ C = np.array([[1, 0, 0, 0],
 # Augmented SS Equation for Robust Tracking
 A_aug = np.block([[np.zeros([C.shape[0],C.shape[0]]), C],
                   [np.zeros([A.shape[0],C.shape[0]]), A]])
+print("A_aug: ", A_aug)
 
 B_aug = np.block([[np.zeros([C.shape[0],1])],
                   [B]])
+print("B_aug: ", B_aug)
 
 B_L = np.array(B_aug, copy=True)
 for i in range(B_L.shape[0]):
@@ -42,46 +44,59 @@ for i in range(B_L.shape[0]):
     else:
         B_L[i] = 0
 
+
 # noise/disturbance 
 w = np.array([0.5])
 w = np.reshape(w,1)
 
-# place the regulator pole to -10, -0.5+i, -0.5-i, -20
-#P = np.array([-0.25+0.5j, -0.25-0.5j, -10, -20])
-P_aug = np.array([-2, -0.5+1j, -0.5-1j, -4, -3, -1])
-#K = control.place(A,B,P)
+# desired pole
+P = np.array([-0.25+0.5j, -0.25-0.5j, -10, -20])
+P_aug = np.array([-0.5, -0.5+1j, -0.5-1j, -0.25+0.25j, -0.25-0.25j, -0.25])
+
+# compute regulator gain
+K = control.place(A,B,P)
 K_aug = control.place(A_aug, B_aug, P_aug)
 
+print("K_aug: ", K_aug)
+
 def f_aug_linear(x, u):
-    x_aug_dot = A_aug@x + B_aug@u + B_L@w
+    x_aug_dot = A_aug@x + B_aug@(u+w)
     return x_aug_dot
 
 def apply_state_controller(x):
     # feedback controller
     # MODIFY THIS PARTS
-    u_aug = -K_aug @ x
-    #print(u_aug)
-    if u_aug > 0:
+    if(x.shape[0] == A_aug.shape[0]):
+        K_cont = K_aug
+    else:
+        K_cont = K
+    
+    u = -K_cont @ x
+    print("u: ", u)
+    if u > 0:
         action = 1
     else:
         action = 0
-    return action, u_aug
+    return action, u
 
 obs_aug = np.block([[np.zeros([C.shape[0],1])],
                           [obs.reshape([4,1])]])
 obs_aug = np.reshape(obs_aug, 6)
+force = np.zeros([1,])
 
 for i in range(1000):
     env.render()
     
-    # MODIFY THIS PART
-    action, force = apply_state_controller(obs_aug)
+    print("obs: ", obs)
+    print("obs_aug: ", obs_aug)
 
     obs_aug_dot = f_aug_linear(obs_aug, force)
     obs_aug = obs_aug + obs_aug_dot * dt
 
-    print(obs_aug)
+    # MODIFY THIS PART
+    action, force = apply_state_controller(obs_aug)
 
+    force = force + w
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     abs_force = abs(float(np.clip(force, -10, 10)))
     
@@ -90,6 +105,9 @@ for i in range(1000):
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
+
+    for n in range(obs.shape[0]):
+        obs_aug[n+C.shape[0]] = obs[n]
 
     reward_total = reward_total+reward
     if done or truncated:
