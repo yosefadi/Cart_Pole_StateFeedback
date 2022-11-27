@@ -46,7 +46,7 @@ Bu = Br[2:]
 
 P = np.array([-10, -0.5+1j, -0.5-1j, -20])
 K = control.place(A, B, P)
-L = control.place(np.transpose(Auu), np.transpose(Aau), [-2+4j, -2-4j])
+L = control.place(np.transpose(Auu), np.transpose(Aau), [-3+6j, -3-6j])
 L = np.transpose(L)
 
 def compute_reduced_observer(Aaa, Aau, Aua, Auu, Bu, Lr, x, x_hat, y, xcc, u, dt):
@@ -80,6 +80,8 @@ obs_hat = np.zeros(4)
 xcc = np.zeros(2)
 u_array = []
 u_total = 0
+theta_array = []
+theta_max = 0
 
 for i in range(1000):
     env.render()
@@ -98,6 +100,7 @@ for i in range(1000):
 
     # apply action
     obs, reward, done, truncated, info = env.step(action)
+    theta_array.append(obs[2])
     print("obs: ", obs)
 
     y = C@obs
@@ -110,10 +113,16 @@ for i in range(1000):
     if done or truncated:
         for i in range(len(u_array)):
             u_total += np.abs(u_array[i])
-            u_avg = u_total/len(u_array)
+        
         print(f'Terminated after {i+1} iterations.')
         print("reward: ", reward_total)
+
+        u_avg = u_total/len(u_array)
         print("u_avg: ", u_avg)
+
+        theta_max = np.amax(theta_array)
+        print("theta_max: ", theta_max * 180/np.pi, "degree")
+
         obs, info = env.reset()
         break
 
