@@ -102,7 +102,7 @@ for i in range(1000):
         print(f'Terminated after {i+1} iterations.')
         print("reward: ", reward_total)
 
-        u_avg = u_total/len(u_array)
+        u_avg = np.around(u_total/len(u_array),3)
         print("force_avg: ", u_avg, "N")
 
         theta_min = np.amin(theta_array)
@@ -114,11 +114,13 @@ for i in range(1000):
             theta_abs = np.abs(theta_min)
             search_theta = theta_min
 
-        print("overshoot: ", theta_abs * 180/np.pi, "degree")
+        overshoot_rad = np.around(theta_abs, 3)
+        overshoot_deg = np.around(np.rad2deg(theta_abs),3)
+        print("overshoot: ", overshoot_deg, "degree")
 
         for i in range(len(theta_array)):
             if theta_array[i] == search_theta:
-                peak_time = i * dt
+                peak_time = np.around(i * dt,3)
                 print("peak_time: ", peak_time, "s")
                 break
 
