@@ -33,7 +33,7 @@ Bt = np.transpose(C)
 Ct = np.transpose(B)
 
 # desired pole
-P = np.array([-10, -0.5+1j, -0.5-1j, -20])
+P = np.array([-10, -0.05+0.025j, -0.05-0.025j, -20])
 Pt = 4*P
 
 # compute regulator and observer gain
