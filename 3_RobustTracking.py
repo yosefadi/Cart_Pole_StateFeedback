@@ -45,7 +45,7 @@ w = np.reshape(w,1)
 
 # desired pole
 P = np.array([-0.25+0.5j, -0.25-0.5j, -10, -20])
-P_aug = np.array([-0.5+1j,-0.5-1j,-0.5+0.5j,-0.5-0.5j,-15])
+P_aug = np.array([-1+1j,-1-1j,-2+2j,-2-2j,-15])
 
 # compute regulator gain
 K = control.place(A,B,P)
@@ -94,11 +94,13 @@ for i in range(1000):
 
     # MODIFY THIS PART
     force = apply_state_controller(obs_aug)
-    u_array.append(force)
 
     # input noise
     force = force + w
     
+    # log force
+    u_array.append(force)
+
     # determine action
     if force > 0:
         action = 1
