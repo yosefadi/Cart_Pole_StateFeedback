@@ -41,12 +41,13 @@ K = control.place(A, B, P)
 L = control.place(At,Bt, Pt)
 L = np.transpose(L)
 
-def compute_state_estimator(A, B, C, L, x_hat, x, u, dt):
+def compute_state_estimator(x_hat, x, u):
     y = C@x
     x_hat_dot = A@x_hat + B@u + L@(y - C@x_hat)
-    return x_hat_dot
+    x_hat = x_hat_dot * dt + x_hat
+    return x_hat
 
-def apply_state_controller(K, x):
+def apply_state_controller(x):
     u = -K@x   # u = -Kx
     if u > 0:
         action = 1
@@ -63,7 +64,7 @@ for i in range(1000):
     env.render()
 
     # MODIFY THIS PART
-    action, force = apply_state_controller(K, obs_hat)
+    action, force = apply_state_controller(obs_hat)
     print("u:", force)
     u_array.append(force)
 
@@ -79,8 +80,7 @@ for i in range(1000):
     print("obs: ", obs)
 
     # compute state estimator
-    obs_hat_dot = compute_state_estimator(A, B, C, L, obs_hat, obs, clip_force, dt)
-    obs_hat = obs_hat + obs_hat_dot*dt
+    obs_hat = compute_state_estimator(obs_hat, obs, clip_force)
     print("obs_hat: ", obs_hat)
     error = np.abs(obs - obs_hat)
     rae = error/abs(obs)
