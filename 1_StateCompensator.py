@@ -56,7 +56,7 @@ def apply_state_controller(x):
         action = 0 
     return action, u
 
-obs_hat = np.zeros(4)
+obs_hat = np.zeros(A.shape[0])
 print(obs_hat)
 u_array = []
 theta_array = []
