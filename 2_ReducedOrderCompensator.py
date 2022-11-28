@@ -159,9 +159,14 @@ for i in range(1000):
 
         for i in range(len(theta_array)):
             if np.abs(theta_array[i]) < 1e-3:
-                peak_time = np.around(i * dt,3)/2
-                print("peak_time: ", peak_time, "s")
-                break
+                converge = 0
+                for j in range(10):
+                    if np.abs(theta_array[i+j]) < 1e-3:
+                        converge = converge + 1
+                if converge == 10:
+                    peak_time = np.around(i * dt,3)/2
+                    print("peak_time: ", peak_time, "s")
+                    break
 
         obs, info = env.reset()
         break
