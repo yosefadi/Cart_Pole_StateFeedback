@@ -6,6 +6,7 @@ if sys.version_info < (3,7,0):
 import gym
 import numpy as np
 from scipy import linalg
+import matplotlib.pyplot as plt
 
 l = 0.5
 mp = 0.1
@@ -44,6 +45,8 @@ R = np.array([[0.1]])
 P = linalg.solve_continuous_are(A, B, Q, R)
 K = np.linalg.inv(R)@np.transpose(B)@P
 
+# compute statenum
+statenum = A.shape[0]
 
 def apply_state_controller(K, x):
     # feedback controller
@@ -59,6 +62,7 @@ def apply_state_controller(K, x):
 u_array = []
 theta_array = []
 t_array = []
+x_array = []
 
 for i in range(1000):
     # time logging
@@ -67,8 +71,9 @@ for i in range(1000):
 
     env.render()
 
-    # print current state
+    # print and log current state
     print("obs: ", obs)
+    x_array.append(obs[0])
     theta_array.append(obs[2])
 
     # get force direction (action) and force value (force)
@@ -122,7 +127,24 @@ for i in range(1000):
                     print("peak_time: ", peak_time, "s")
                     break
 
+        # plot 
+        subplots = []
+        for i in range(statenum-2):
+            fig, ax = plt.subplots()
+            subplots.append(ax)
+
+        subplots[0].plot(t_array, x_array)
+        subplots[0].set_title(f"x")
+        subplots[0].set_xlabel("time (s)")
+        subplots[0].set_ylabel("x")
+
+        subplots[1].plot(t_array, theta_array)
+        subplots[1].set_title(f"theta")
+        subplots[1].set_xlabel("time (s)")
+        subplots[1].set_ylabel("radians")
+
         obs, info = env.reset()
         break
 
 env.close()
+plt.show(block=True)

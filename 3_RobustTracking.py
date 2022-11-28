@@ -6,6 +6,7 @@ if sys.version_info < (3,7,0):
 import gym
 import numpy as np
 import control
+import matplotlib.pyplot as plt
 
 l = 0.5
 mp = 0.1
@@ -56,7 +57,8 @@ P_aug = np.array([-2+0.5j,-2-0.5j,-1.75+0.25j,-1.75-0.25j,-100])
 K = control.place(A,B,P)
 K_aug = control.place(A_aug, B_aug, P_aug)
 
-print("K_aug: ", K_aug)
+# compute statenum
+statenum = A.shape[0]
 
 def f_aug_linear(x, u):
     x_aug_dot = A_aug@x + B_aug@u + B_L@w
@@ -170,7 +172,24 @@ for i in range(1000):
                     print("peak_time: ", peak_time, "s")
                     break
 
+        # plot 
+        subplots = []
+        for i in range(statenum-2):
+            fig, ax = plt.subplots()
+            subplots.append(ax)
+
+        subplots[0].plot(t_array, x_array)
+        subplots[0].set_title(f"x")
+        subplots[0].set_xlabel("time (s)")
+        subplots[0].set_ylabel("x")
+
+        subplots[1].plot(t_array, theta_array)
+        subplots[1].set_title(f"theta")
+        subplots[1].set_xlabel("time (s)")
+        subplots[1].set_ylabel("radians")
+
         obs, info = env.reset()
         break
 
 env.close()
+plt.show(block=True)
