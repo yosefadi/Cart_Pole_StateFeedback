@@ -54,7 +54,7 @@ K_aug = control.place(A_aug, B_aug, P_aug)
 print("K_aug: ", K_aug)
 
 def f_aug_linear(x, u):
-    x_aug_dot = A_aug@x + B_aug@u + B_L@u
+    x_aug_dot = A_aug@x + B_aug@u + B_L@w
     return x_aug_dot
 
 def apply_state_controller(x):
