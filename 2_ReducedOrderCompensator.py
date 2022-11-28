@@ -11,6 +11,7 @@ if sys.version_info < (3,7,0):
 import gym
 import numpy as np
 import control
+import matplotlib.pyplot as plt
 
 l = 0.5
 mp = 0.1
@@ -60,6 +61,9 @@ Auu = Ar[2:,2:]
 Ba = Br[:2]
 Bu = Br[2:]
 
+# compute statenum
+statenum = A.shape[0]
+
 # desired poles
 P = np.array([-0.25+0.25j, -0.25-0.25j, -21+0.25j, -21-0.25j])
 Pt = 4 * P[:2]
@@ -101,6 +105,7 @@ def apply_state_controller(x):
 obs_hat = np.zeros(4,)
 xcc = np.zeros(2,)
 u_array = []
+x_array = []
 theta_array = []
 t_array = []
 
@@ -114,16 +119,19 @@ for i in range(1000):
     # states data logging
     print("obs_hat: ", obs_hat)
     print("obs: ", obs)
+    x_array.append(obs[0])
     theta_array.append(obs[2])
 
     # MODIFY THIS PART
     action, force = apply_state_controller(obs_hat)
     print("u:", force)
-    u_array.append(force)
 
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     clip_force = np.clip(force, -10, 10)
     abs_force = np.abs(float(clip_force))
+
+    # log absolute force for plotting
+    u_array.append(abs_force)
 
     # change magnitute of the applied force in CartPole
     env.force_mag = abs_force
@@ -141,12 +149,8 @@ for i in range(1000):
     if done or truncated or reward_total == reward_threshold:
         print(f'Terminated after {i+1} iterations.')
         print("reward: ", reward_total)
-
-        u_array_abs = []
-        for i in range(len(u_array)):
-            u_array_abs.append(np.abs(u_array[i]))
         
-        u_avg = np.around(np.mean(u_array_abs),3)
+        u_avg = np.around(np.mean(u_array),3)
         print("force_avg: ", u_avg, "N")
 
         theta_max = np.amax(theta_array)
@@ -165,7 +169,7 @@ for i in range(1000):
         for i in range(len(theta_array)):
             if np.abs(theta_array[i]) < 1e-3:
                 converge = 0
-                for j in range(10):
+                for j in range(20):
                     if np.abs(theta_array[i+j]) < 1e-3:
                         converge = converge + 1
                 if converge == 10:
@@ -173,7 +177,24 @@ for i in range(1000):
                     print("peak_time: ", peak_time, "s")
                     break
 
+        # plot 
+        subplots = []
+        for i in range(statenum-2):
+            fig, ax = plt.subplots()
+            subplots.append(ax)
+
+        subplots[0].plot(t_array, x_array)
+        subplots[0].set_title(f"x")
+        subplots[0].set_xlabel("time (s)")
+        subplots[0].set_ylabel("x")
+
+        subplots[1].plot(t_array, theta_array)
+        subplots[1].set_title(f"theta")
+        subplots[1].set_xlabel("time (s)")
+        subplots[1].set_ylabel("radians")
+
         obs, info = env.reset()
         break
 
 env.close()
+plt.show(block=True)
