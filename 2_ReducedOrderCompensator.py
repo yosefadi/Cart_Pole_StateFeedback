@@ -3,6 +3,11 @@ References:   https://pages.jh.edu/piglesi1/Courses/454/Notes6.pdf
 Implemented in python with numpy
 """
 
+import sys
+if sys.version_info < (3,7,0):
+    print("Please use python 3.7.0 or higher")
+    sys.exit(1)
+
 import gym
 import numpy as np
 import control

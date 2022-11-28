@@ -1,3 +1,8 @@
+import sys
+if sys.version_info < (3,7,0):
+    print("Please use python 3.7.0 or higher")
+    sys.exit(1)
+    
 import gym
 import numpy as np
 from scipy import linalg
