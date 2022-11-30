@@ -45,7 +45,7 @@ Ct = np.transpose(B)
 statenum = A.shape[0]
 
 # desired pole
-P = np.array([-0.25+0.25j, -0.25-0.25j, -20+0.25j, -20-0.25j])
+P = np.array([-0.25+0.5j, -0.25-0.5j, -20+0.25j, -20-0.25j])
 Pt = 4*P
 
 # compute regulator and observer gain
