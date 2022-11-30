@@ -1,6 +1,6 @@
 import sys
-if sys.version_info < (3,9,0):
-    print("Please use python 3.9.0 or higher")
+if sys.version_info < (3,7,0):
+    print("Please use python 3.7.0 or higher")
     sys.exit(1)
     
 import gym
