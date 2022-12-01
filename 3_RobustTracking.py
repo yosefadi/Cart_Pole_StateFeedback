@@ -84,6 +84,7 @@ force = np.zeros([1,])
 u_array = []
 x_array = []
 theta_array = []
+theta_deg_array = []
 t_array = []
 
 for i in range(1000):
@@ -148,6 +149,9 @@ for i in range(1000):
         u_avg = np.around(np.mean(u_array_abs),3)
         print("u_avg: ", u_avg, "N")
 
+        for i in range(len(theta_array)):
+            theta_deg_array.append(np.rad2deg(theta_array[i]))
+
         theta_min = np.amin(theta_array)
         theta_max = np.amax(theta_array)
         if theta_max > np.abs(theta_min):
@@ -183,7 +187,7 @@ for i in range(1000):
         subplots[0].set_xlabel("time (s)")
         subplots[0].set_ylabel("x")
 
-        subplots[1].plot(t_array, theta_array)
+        subplots[1].plot(t_array, theta_deg_array)
         subplots[1].set_title(f"theta")
         subplots[1].set_xlabel("time (s)")
         subplots[1].set_ylabel("radians")
