@@ -120,30 +120,6 @@ for i in range(1000):
         for i in range(len(theta_array)):
             theta_deg_array.append(np.rad2deg(theta_array[i]))
 
-        theta_min = np.amin(theta_array)
-        theta_max = np.amax(theta_array)
-        if theta_max > np.abs(theta_min):
-            theta_abs = theta_max
-            search_theta = theta_max
-        else:
-            theta_abs = np.abs(theta_min)
-            search_theta = theta_min
-
-        overshoot_rad = np.around(theta_abs, 3)
-        overshoot_deg = np.around(np.rad2deg(theta_abs),3)
-        print("overshoot: ", overshoot_deg, "degree")
-
-        for i in range(len(theta_array)):
-            if np.abs(theta_array[i]) < 1e-3:
-                converge = 0
-                for j in range(20):
-                    if np.abs(theta_array[i+j]) < 1e-3:
-                        converge = converge + 1
-                if converge == 10:
-                    peak_time = np.around(i * dt,3)/2
-                    print("peak_time: ", peak_time, "s")
-                    break
-
         # plot 
         subplots = []
         for i in range(statenum-2):
