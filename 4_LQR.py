@@ -15,7 +15,7 @@ except ImportError:
     import gym
     print("Gymnasium not installed. Using OpenAI Gym API instead.")
     if gym.__version__ < "0.23.0":
-        print("Enabling compat API for OpenAI Gym version < 0.2.2")
+        print("Enabling compat API for OpenAI Gym version < 0.23.0")
         legacy_api = True
     else:
         legacy_api = False
