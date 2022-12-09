@@ -1,13 +1,32 @@
+# Check Python version
+# Requires Python 3.6 or later
 import sys
-if sys.version_info < (3,7,0):
-    print("Please use python 3.7.0 or higher")
+if sys.version_info < (3,6,0):
+    print("Please use python 3.6.0 or higher")
     sys.exit(1)
 
-import gymnasium as gym
+# Try using Gymnasium (updated fork of OpenAI Gym) for the environment
+# if not installed, fallback to OpenAI Gym Standard Module
+try:
+    import gymnasium as gym
+    print("Using Gymnasium API.")
+    legacy_api = False
+except ImportError:
+    import gym
+    print("Gymnasium not installed. Using OpenAI Gym API instead.")
+    if gym.__version__ < "0.23.0":
+        print("Enabling compat API for OpenAI Gym version < 0.2.2")
+        legacy_api = True
+    else:
+        legacy_api = False
+    pass
+
+# Import necessary module
 import numpy as np
 import control
 import matplotlib.pyplot as plt
 
+# Environment Variable
 l = 0.5
 mp = 0.1
 mc = 1.0
@@ -15,10 +34,15 @@ g = 9.8
 dt = 0.02
 
 # get environment
-env = gym.make('CartPole-v1', render_mode="human").unwrapped
-#env.env.seed(1)     # seed for reproducibility
-obs, info = env.reset(seed=1)
-reward_threshold = 475
+if legacy_api == True:
+    env = gym.make('CartPole-v0').unwrapped
+    env.seed(1)
+    obs = env.reset()
+else:
+    env = gym.make('CartPole-v1', render_mode="human").unwrapped
+    obs, info = env.reset(seed=1)
+
+reward_threshold = 200
 reward_total = 0
 
 # System State Space Equation
@@ -122,7 +146,10 @@ for i in range(1000):
     env.force_mag = abs_force
 
     # apply action
-    obs, reward, done, truncated, info = env.step(action)
+    if legacy_api == True:
+        obs, reward, done, info = env.step(action)
+    else:
+        obs, reward, done, truncated, info = env.step(action)
 
     obs_aug_dot = f_aug_linear(obs_aug, force)
     obs_aug = obs_aug + obs_aug_dot * dt
@@ -132,7 +159,7 @@ for i in range(1000):
 
     reward_total = reward_total+reward
     print()
-    if done or truncated or reward_total == reward_threshold:
+    if done or reward_total == reward_threshold:
         print(f'Terminated after {i+1} iterations.')
         print("reward: ", reward_total)
 
@@ -168,7 +195,10 @@ for i in range(1000):
         subplots[1].set_xlabel("time (s)")
         subplots[1].set_ylabel("radians")
 
-        obs, info = env.reset()
+        if legacy_api == True:
+            obs = env.reset()
+        else:
+            obs, info = env.reset()
         break
 
 env.close()
