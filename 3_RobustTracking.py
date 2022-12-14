@@ -5,6 +5,10 @@ if sys.version_info < (3,6,0):
     print("Please use python 3.6.0 or higher")
     sys.exit(1)
 
+# Version Checking Function
+def versiontuple(v):
+    return tuple(map(int, (v.split("."))))
+
 # Try using Gymnasium (updated fork of OpenAI Gym) for the environment
 # if not installed, fallback to OpenAI Gym Standard Module
 try:
@@ -14,7 +18,7 @@ try:
 except ImportError:
     import gym
     print("Gymnasium not installed. Using OpenAI Gym API instead.")
-    if gym.__version__ < "0.23.0":
+    if versiontuple(gym.__version__) < (0,23,0):
         print("Enabling compat API for OpenAI Gym version < 0.23.0")
         legacy_api = True
     else:
@@ -39,7 +43,7 @@ if legacy_api == True:
     env.seed(1)
     obs = env.reset()
 else:
-    env = gym.make('CartPole-v1', render_mode="human").unwrapped
+    env = gym.make('CartPole-v0', render_mode="human").unwrapped
     obs, info = env.reset(seed=1)
 
 reward_threshold = 200
@@ -107,8 +111,11 @@ force = np.zeros([1,])
 
 u_array = []
 x_array = []
+x_dot_array = []
 theta_array = []
 theta_deg_array = []
+theta_dot_array = []
+theta_dot_deg_array = []
 t_array = []
 
 for i in range(1000):
@@ -120,7 +127,9 @@ for i in range(1000):
     
     # log state
     x_array.append(obs[0])
+    x_dot_array.append(obs[1])
     theta_array.append(obs[2])
+    theta_dot_array.append(obs[3])
     print("obs: ", obs)
     print("obs_aug: ", obs_aug)
 
@@ -129,9 +138,6 @@ for i in range(1000):
 
     # input noise
     force = force + w
-    
-    # log force
-    u_array.append(force)
 
     # determine action
     if force > 0:
@@ -142,6 +148,9 @@ for i in range(1000):
     # absolute value, since 'action' determines the sign, F_min = -10N, F_max = 10N
     abs_force = abs(float(np.clip(force, -10, 10)))
     
+    # log force
+    u_array.append(abs_force)
+
     # change magnitute of the applied force in CartPole
     env.force_mag = abs_force
 
@@ -178,22 +187,33 @@ for i in range(1000):
 
         for i in range(len(theta_array)):
             theta_deg_array.append(np.rad2deg(theta_array[i]))
+            theta_dot_deg_array.append(np.rad2deg(theta_dot_array[i]))
 
         # plot 
         subplots = []
-        for i in range(statenum-2):
+        for i in range(statenum):
             fig, ax = plt.subplots()
             subplots.append(ax)
 
         subplots[0].plot(t_array, x_array)
-        subplots[0].set_title(f"x")
+        subplots[0].set_title("x")
         subplots[0].set_xlabel("time (s)")
         subplots[0].set_ylabel("x")
 
-        subplots[1].plot(t_array, theta_deg_array)
-        subplots[1].set_title(f"theta")
+        subplots[1].plot(t_array, x_dot_array)
+        subplots[1].set_title("x dot")
         subplots[1].set_xlabel("time (s)")
-        subplots[1].set_ylabel("radians")
+        subplots[1].set_ylabel("dx/dt")
+        
+        subplots[2].plot(t_array, theta_deg_array)
+        subplots[2].set_title("theta")
+        subplots[2].set_xlabel("time (s)")
+        subplots[2].set_ylabel("degree")
+
+        subplots[3].plot(t_array, theta_dot_deg_array)
+        subplots[3].set_title("theta dot")
+        subplots[3].set_xlabel("time (s)")
+        subplots[3].set_ylabel("dtheta/dt (deg/s)")
 
         if legacy_api == True:
             obs = env.reset()
