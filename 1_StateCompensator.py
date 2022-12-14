@@ -66,8 +66,8 @@ C = np.array([[1, 0, 0, 0],
 # create matrices for state estimator computation
 # using duality principle
 At = np.transpose(A)
-Bt = np.transpose(C)
-Ct = np.transpose(B)
+Bt = np.transpose(B)
+Ct = np.transpose(C)
 
 # compute statenum
 statenum = A.shape[0]
@@ -78,7 +78,7 @@ Pt = 4*P
 
 # compute regulator and observer gain
 K = control.place(A, B, P)
-L = control.place(At, Bt, Pt)
+L = control.place(At, Ct, Pt)
 L = np.transpose(L)
 
 def compute_state_estimator(x_hat, x, u):
