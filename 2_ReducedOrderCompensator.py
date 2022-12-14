@@ -93,7 +93,7 @@ statenum = A.shape[0]
 
 # desired poles
 P = np.array([-0.5+0.5j, -0.5-0.5j, -21+0.25j, -21-0.25j])
-Pt = 4 * P[:2]
+Pt = 4 * P[2:]
 
 # compute regulator and observer gains
 K = control.place(A, B, P)
