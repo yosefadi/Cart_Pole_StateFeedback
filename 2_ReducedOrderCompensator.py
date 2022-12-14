@@ -142,10 +142,13 @@ xcc = np.zeros(2,)
 u_array = []
 x_array = []
 x_dot_array = []
+x_hat_dot_array = []
 theta_array = []
 theta_deg_array = []
 theta_dot_array = []
+theta_hat_dot_array = []
 theta_dot_deg_array = []
+theta_hat_dot_deg_array = []
 t_array = []
 
 for i in range(1000):
@@ -162,6 +165,8 @@ for i in range(1000):
     x_dot_array.append(obs[1])
     theta_array.append(obs[2])
     theta_dot_array.append(obs[3])
+    x_hat_dot_array.append(obs_hat[1])
+    theta_hat_dot_array.append(obs_hat[3])
 
     # MODIFY THIS PART
     action, force = apply_state_controller(obs_hat)
@@ -202,6 +207,7 @@ for i in range(1000):
         for i in range(len(theta_array)):
             theta_deg_array.append(np.rad2deg(theta_array[i]))
             theta_dot_deg_array.append(np.rad2deg(theta_dot_array[i]))
+            theta_hat_dot_deg_array.append(np.rad2deg(theta_hat_dot_array[i]))
 
         # plot 
         subplots = []
@@ -214,7 +220,8 @@ for i in range(1000):
         subplots[0].set_xlabel("time (s)")
         subplots[0].set_ylabel("x")
 
-        subplots[1].plot(t_array, x_dot_array)
+        subplots[1].plot(t_array, x_dot_array, '-b', label="x_dot")
+        subplots[1].plot(t_array, x_hat_dot_array, '--r', label="x_hat_dot")
         subplots[1].set_title("x dot")
         subplots[1].set_xlabel("time (s)")
         subplots[1].set_ylabel("dx/dt")
@@ -224,7 +231,8 @@ for i in range(1000):
         subplots[2].set_xlabel("time (s)")
         subplots[2].set_ylabel("degree")
 
-        subplots[3].plot(t_array, theta_dot_deg_array)
+        subplots[3].plot(t_array, theta_dot_deg_array, '-b', label="theta_dot")
+        subplots[3].plot(t_array, theta_hat_dot_deg_array, '--r', label="theta_hat_dot")
         subplots[3].set_title("theta dot")
         subplots[3].set_xlabel("time (s)")
         subplots[3].set_ylabel("dtheta/dt (deg/s)")
