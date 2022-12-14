@@ -1,3 +1,13 @@
+"""
+    PSKM - State Compensator
+    Author:
+        - Yosef Adi Sulistyo
+        - Andreas Ryan C.K.
+        - Bonaventura Riko K.D.
+        - Rafli Priyo Utomo
+        - Muhammad Bagus H.
+"""
+
 # Check Python version
 # Requires Python 3.6 or later
 import sys

@@ -1,4 +1,12 @@
 """
+PSKM - Reduced Order Compensator
+Author:
+    - Yosef Adi Sulistyo
+    - Andreas Ryan C.K. 
+    - Bonaventura Riko K.D.
+    - Rafli Priyo Utomo
+    - Muhammad Bagus H.
+
 References:   https://pages.jh.edu/piglesi1/Courses/454/Notes6.pdf
 Implemented in python with numpy
 """
